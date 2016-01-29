@@ -22,6 +22,7 @@ import com.intellij.debugger.engine.evaluation.TextWithImportsImpl
 import com.intellij.debugger.impl.EditorTextProvider
 import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.idea.KotlinFileType
@@ -109,7 +110,17 @@ class KotlinEditorTextProvider : EditorTextProvider {
 
             return when {
                 newExpression is KtExpression -> newExpression
-                jetElement is KtSimpleNameExpression -> jetElement
+                jetElement is KtSimpleNameExpression -> {
+                    if (jetElement.references.any {
+                        val resolved = it.resolve()
+                        resolved is PsiClass || (resolved is KtObjectDeclaration && resolved.isCompanion())
+                    }){
+                        null
+                    }
+                    else {
+                        jetElement
+                    }
+                }
                 else -> null
             }
 
