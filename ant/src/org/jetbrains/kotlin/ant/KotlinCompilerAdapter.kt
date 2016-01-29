@@ -28,6 +28,7 @@ import java.util.*
 
 class KotlinCompilerAdapter : Javac13() {
     var moduleName: String? = null
+    var printVersion: Boolean = false
 
     var additionalArguments: MutableList<Commandline.Argument> = ArrayList(0)
 
@@ -59,6 +60,8 @@ class KotlinCompilerAdapter : Javac13() {
         // We use the provided src dir instead of compileList, because the latter is insane:
         // it is constructed only of sources which are newer than classes with the same name
         kotlinc.src = javac.srcdir
+
+        kotlinc.printVersion = printVersion
 
         if (moduleName == null) {
             moduleName = javac.defaultModuleName
