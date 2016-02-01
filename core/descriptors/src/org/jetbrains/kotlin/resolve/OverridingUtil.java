@@ -317,11 +317,29 @@ public class OverridingUtil {
         return bound;
     }
 
+    private static boolean allHasSameContainingDeclaration(@NotNull Collection<CallableMemberDescriptor> notOverridden) {
+        if (notOverridden.size() < 2) return true;
+
+        final DeclarationDescriptor containingDeclaration = notOverridden.iterator().next().getContainingDeclaration();
+        return CollectionsKt.all(notOverridden, new Function1<CallableMemberDescriptor, Boolean>() {
+            @Override
+            public Boolean invoke(CallableMemberDescriptor descriptor) {
+                return descriptor.getContainingDeclaration() == containingDeclaration;
+            }
+        });
+    }
+
     private static void createAndBindFakeOverrides(
             @NotNull ClassDescriptor current,
             @NotNull Collection<CallableMemberDescriptor> notOverridden,
             @NotNull DescriptorSink sink
     ) {
+        if (allHasSameContainingDeclaration(notOverridden)) {
+            for (CallableMemberDescriptor descriptor : notOverridden) {
+                createAndBindFakeOverride(Collections.singleton(descriptor), current, sink);
+            }
+            return;
+        }
         Queue<CallableMemberDescriptor> fromSuperQueue = new LinkedList<CallableMemberDescriptor>(notOverridden);
         while (!fromSuperQueue.isEmpty()) {
             CallableMemberDescriptor notOverriddenFromSuper = VisibilityUtilKt.findMemberWithMaxVisibility(fromSuperQueue);
