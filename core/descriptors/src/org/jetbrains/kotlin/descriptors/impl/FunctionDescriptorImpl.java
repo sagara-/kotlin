@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.descriptors.impl;
 
+import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
@@ -50,7 +51,8 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     private boolean isHidden = false;
     private boolean hasStableParameterNames = true;
     private boolean hasSynthesizedParameterNames = false;
-    private final Set<FunctionDescriptor> overriddenFunctions = SmartSet.create();
+    private Set<FunctionDescriptor> overriddenFunctions = SmartSet.create();
+    private volatile Function0<Set<FunctionDescriptor>> lazyOverriddenFunctionsTask = null;
     private final FunctionDescriptor original;
     private final Kind kind;
     @Nullable
@@ -165,7 +167,16 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     @NotNull
     @Override
     public Collection<? extends FunctionDescriptor> getOverriddenDescriptors() {
+        performOverriddenLazyCalculationIfNeeded();
         return overriddenFunctions;
+    }
+
+    private void performOverriddenLazyCalculationIfNeeded() {
+        Function0<Set<FunctionDescriptor>> overriddenTask = lazyOverriddenFunctionsTask;
+        if (overriddenTask != null) {
+            overriddenFunctions = overriddenTask.invoke();
+            lazyOverriddenFunctionsTask = null;
+        }
     }
 
     @NotNull
@@ -224,6 +235,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
 
     @Override
     public void addOverriddenDescriptor(@NotNull CallableMemberDescriptor overriddenFunction) {
+        performOverriddenLazyCalculationIfNeeded();
         overriddenFunctions.add((FunctionDescriptor) overriddenFunction);
     }
 
@@ -445,7 +457,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
                 configuration.preserveSourceElement);
 
         List<TypeParameterDescriptor> substitutedTypeParameters;
-        TypeSubstitutor substitutor;
+        final TypeSubstitutor substitutor;
 
         if (configuration.newTypeParameters == null) {
             List<TypeParameterDescriptor> originalTypeParameters = getTypeParameters();
@@ -523,13 +535,28 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
         }
 
         if (configuration.copyOverrides) {
-            for (FunctionDescriptor overriddenFunction : overriddenFunctions) {
-                if (configuration.originalSubstitutor.isEmpty()) {
-                    substitutedDescriptor.addOverriddenDescriptor(overriddenFunction);
+            if (configuration.originalSubstitutor.isEmpty()) {
+                Function0<Set<FunctionDescriptor>> overriddenFunctionsTask = lazyOverriddenFunctionsTask;
+                if (overriddenFunctionsTask != null) {
+                    substitutedDescriptor.lazyOverriddenFunctionsTask = overriddenFunctionsTask;
                 }
                 else {
-                    substitutedDescriptor.addOverriddenDescriptor(overriddenFunction.substitute(substitutor));
+                    for (FunctionDescriptor overriddenFunction : getOverriddenDescriptors()) {
+                        substitutedDescriptor.addOverriddenDescriptor(overriddenFunction);
+                    }
                 }
+            }
+            else {
+                substitutedDescriptor.lazyOverriddenFunctionsTask = new Function0<Set<FunctionDescriptor>>() {
+                    @Override
+                    public Set<FunctionDescriptor> invoke() {
+                        SmartSet<FunctionDescriptor> result = SmartSet.create();
+                        for (FunctionDescriptor overriddenFunction : getOverriddenDescriptors()) {
+                            result.add(overriddenFunction.substitute(substitutor));
+                        }
+                        return result;
+                    }
+                };
             }
         }
 
