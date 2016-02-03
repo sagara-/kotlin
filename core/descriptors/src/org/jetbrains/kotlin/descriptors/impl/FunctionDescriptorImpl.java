@@ -195,7 +195,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     public boolean isOperator() {
         if (isOperator) return true;
 
-        for (FunctionDescriptor descriptor : overriddenFunctions) {
+        for (FunctionDescriptor descriptor : getOriginal().getOverriddenDescriptors()) {
             if (descriptor.isOperator()) return true;
         }
 
@@ -206,7 +206,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     public boolean isInfix() {
         if (isInfix) return true;
 
-        for (FunctionDescriptor descriptor : overriddenFunctions) {
+        for (FunctionDescriptor descriptor : getOriginal().getOverriddenDescriptors()) {
             if (descriptor.isInfix()) return true;
         }
 
