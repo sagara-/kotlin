@@ -98,7 +98,7 @@ class ResolverForProjectImpl<M : ModuleInfo>(
     }
 
     private fun doGetDescriptorForModule(moduleInfo: M): ModuleDescriptorImpl {
-        return descriptorByModule[moduleInfo] ?: return delegateResolver.descriptorForModule(moduleInfo) as ModuleDescriptorImpl
+        return descriptorByModule[moduleInfo] ?: delegateResolver.descriptorForModule(moduleInfo) as ModuleDescriptorImpl
     }
 }
 
@@ -194,7 +194,7 @@ abstract class AnalyzerFacade<in P : PlatformAnalysisParameters> {
                 module ->
                 val descriptor = resolverForProject.descriptorForModule(module)
                 module.friends().forEach {
-                    descriptor.addFriend(resolverForProject.descriptorForModule(it as M))
+                    resolverForProject.descriptorForModule(it as M).addFriend(descriptor)
                 }
             }
         }

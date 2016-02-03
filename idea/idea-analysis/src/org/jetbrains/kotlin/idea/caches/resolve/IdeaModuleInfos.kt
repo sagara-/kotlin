@@ -26,10 +26,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.util.SmartList
 import org.jetbrains.kotlin.analyzer.ModuleInfo
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.emptyOrSingletonList
+import java.lang.reflect.Method
 import java.util.*
 
 val LIBRARY_NAME_PREFIX: String = "library "
@@ -41,6 +43,34 @@ interface IdeaModuleInfo : ModuleInfo {
 
     override val capabilities: Map<ModuleDescriptor.Capability<*>, Any?>
         get() = mapOf(OriginCapability to moduleOrigin)
+}
+
+private val DO_NOTHING: (Module) -> Module? = { null }
+
+private val getRelatedProductionModule: (Module) -> Module? = run {
+    val klass =
+            try {
+                Class.forName("com.intellij.openapi.roots.TestModuleProperties")
+            } catch (e: ClassNotFoundException) {
+                return@run DO_NOTHING
+            }
+
+
+    val getInstanceMethod: Method
+    val getProductionModuleMethod: Method
+
+    try {
+        getInstanceMethod = klass.getDeclaredMethod("getInstance", Module::class.java)
+        getProductionModuleMethod = klass.getDeclaredMethod("getProductionModule")
+    }
+    catch (e: NoSuchMethodException) {
+        return@run DO_NOTHING
+    }
+
+    return@run { module ->
+        val instance = getInstanceMethod(null, module)
+        getProductionModuleMethod(instance) as Module?
+    }
 }
 
 private fun orderEntryToModuleInfo(project: Project, orderEntry: OrderEntry, productionOnly: Boolean): List<IdeaModuleInfo> {
@@ -71,7 +101,7 @@ private fun <T> Module.cached(provider: CachedValueProvider<T>): T {
     return CachedValuesManager.getManager(project).getCachedValue(this, provider)
 }
 
-fun ideaModelDependencies(module: Module, productionOnly: Boolean): List<IdeaModuleInfo> {
+private fun ideaModelDependencies(module: Module, productionOnly: Boolean): List<IdeaModuleInfo> {
     //NOTE: lib dependencies can be processed several times during recursive traversal
     val result = LinkedHashSet<IdeaModuleInfo>()
     val dependencyEnumerator = ModuleRootManager.getInstance(module).orderEntries().compileOnly().recursively().exportedOnly()
@@ -102,8 +132,6 @@ data class ModuleProductionSourceInfo(override val module: Module) : ModuleSourc
                 ideaModelDependencies(module, productionOnly = true),
                 ProjectRootModificationTracker.getInstance(module.project))
     })
-
-    override fun friends() = listOf(module.testSourceInfo())
 }
 
 //TODO: (module refactoring) do not create ModuleTestSourceInfo when there are no test roots for module
@@ -116,6 +144,16 @@ data class ModuleTestSourceInfo(override val module: Module) : ModuleSourceInfo 
         CachedValueProvider.Result(
                 ideaModelDependencies(module, productionOnly = false),
                 ProjectRootModificationTracker.getInstance(module.project))
+    })
+
+    override fun friends() = module.cached(CachedValueProvider {
+        val list = SmartList<ModuleInfo>(module.productionSourceInfo())
+
+        getRelatedProductionModule(module)?.let {
+            list.add(it.productionSourceInfo())
+        }
+
+        CachedValueProvider.Result(list, ProjectRootModificationTracker.getInstance(module.project))
     })
 }
 
