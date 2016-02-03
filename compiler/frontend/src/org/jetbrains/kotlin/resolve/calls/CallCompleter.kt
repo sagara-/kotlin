@@ -43,10 +43,8 @@ import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo
 import org.jetbrains.kotlin.resolve.calls.tasks.TracingStrategy
 import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValue
 import org.jetbrains.kotlin.resolve.validation.SymbolUsageValidator
-import org.jetbrains.kotlin.types.ErrorUtils
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.TypeUtils
-import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.expressions.DataFlowAnalyzer
 import java.util.*
 
@@ -157,10 +155,15 @@ class CallCompleter(
         }
 
         if (returnType != null && !TypeUtils.noExpectedType(expectedType)) {
+            var compositeExpectedType = expectedType
+            val earlierType = call.calleeExpression?.let { trace.getType(it) }
+            if (earlierType != null) {
+                compositeExpectedType = TypeIntersector.intersectTypes(KotlinTypeChecker.DEFAULT, listOf(expectedType, earlierType)) ?: compositeExpectedType
+            }
             updateSystemIfNeeded { builder ->
                 val returnTypeInSystem = builder.returnTypeInSystem()
                 if (returnTypeInSystem != null) {
-                    builder.addSubtypeConstraint(returnTypeInSystem, expectedType, EXPECTED_TYPE_POSITION.position())
+                    builder.addSubtypeConstraint(returnTypeInSystem, compositeExpectedType, EXPECTED_TYPE_POSITION.position())
                     builder.build()
                 }
                 else null
