@@ -46,7 +46,7 @@ fun createSynthesizedInvokes(functions: Collection<FunctionDescriptor>): Collect
                     synthesizedSuperFun.modality,
                     synthesizedSuperFun.visibility,
                     CallableMemberDescriptor.Kind.FAKE_OVERRIDE,
-                    true
+                    /* copyOverrides = */ false
             )
             fakeOverride.addOverriddenDescriptor(synthesizedSuperFun)
             fakeOverride
