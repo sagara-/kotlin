@@ -120,8 +120,8 @@ class IDEAndroidLayoutXmlFileManager(val module: Module) : AndroidLayoutXmlFileM
             }
             val mainVariant = mainSourceProvider.toVariant()
             if (modelClass == null) {
-                val flavorVariants = flavorSourceProviders?.map { it.toVariant() } ?: listOf()
-                return AndroidModule(applicationPackage, listOf(mainVariant) + flavorVariants)
+//                val flavorVariants = flavorSourceProviders?.map { it.toVariant() } ?: listOf()
+                return AndroidModule(applicationPackage, listOf(mainVariant)/* + flavorVariants*/)
             }
             else {
                 val model = modelClass.getDeclaredMethod("get", Module::class.java).invoke(null, module)
