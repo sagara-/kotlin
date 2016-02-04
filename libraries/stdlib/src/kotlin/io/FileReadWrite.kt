@@ -132,7 +132,7 @@ public fun File.appendText(text: String, charset: String): Unit = appendBytes(te
  *
  * @param action function to process file blocks.
  */
-public fun File.forEachBlock(action: (ByteArray, Int) -> Unit): Unit = forEachBlock(defaultBlockSize, action)
+public fun File.forEachBlock(action: (ByteArray, Int) -> Unit): Unit = forEachBlock(DEFAULT_BLOCK_SIZE, action)
 
 @Deprecated("Use forEachBlock with blockSize as a first parameter.", ReplaceWith("forEachBlock(blockSize, action)"), level = DeprecationLevel.ERROR)
 public fun File.forEachBlock(action: (ByteArray, Int) -> Unit, blockSize: Int): Unit
@@ -147,7 +147,7 @@ public fun File.forEachBlock(action: (ByteArray, Int) -> Unit, blockSize: Int): 
  * @param blockSize size of a block, replaced by 512 if it's less, 4096 by default.
  */
 public fun File.forEachBlock(blockSize: Int, action: (ByteArray, Int) -> Unit): Unit {
-    val arr = ByteArray(if (blockSize < minimumBlockSize) minimumBlockSize else blockSize)
+    val arr = ByteArray(blockSize.coerceAtLeast(MINIMUM_BLOCK_SIZE))
     val fis = FileInputStream(this)
 
     try {
