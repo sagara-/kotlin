@@ -113,9 +113,7 @@ class MultifileClassCodegen(
 
         generateDelegatesToPreviouslyCompiledParts(generateCallableMemberTasks, partFqNames)
 
-        if (!generateCallableMemberTasks.isEmpty()) {
-            generateMultifileFacadeClass(generateCallableMemberTasks, partFqNames)
-        }
+        generateMultifileFacadeClass(generateCallableMemberTasks, partFqNames)
     }
 
     private fun generateCodeForSourceFiles(
