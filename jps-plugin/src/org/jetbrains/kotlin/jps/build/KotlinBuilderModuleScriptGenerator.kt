@@ -86,7 +86,7 @@ object KotlinBuilderModuleScriptGenerator {
         val logger = context.loggingManager.projectBuilderLogger
         for (target in chunk.targets) {
             val outputDir = getOutputDirSafe(target)
-            val friendDirs = getFriendDirSafe(target)
+            val friendDirs = getAdditionalOutputDirsWhereInternalsVisible(target)
 
             val moduleSources = ArrayList(
                     if (IncrementalCompilation.isEnabled())
@@ -129,7 +129,7 @@ object KotlinBuilderModuleScriptGenerator {
     fun getOutputDirSafe(target: ModuleBuildTarget): File =
             target.outputDir ?: throw ProjectBuildException("No output directory found for " + target)
 
-    private fun getFriendDirSafe(target: ModuleBuildTarget): List<File> {
+    private fun getAdditionalOutputDirsWhereInternalsVisible(target: ModuleBuildTarget): List<File> {
         if (!target.isTests) return emptyList()
 
         val result = SmartList<File>()

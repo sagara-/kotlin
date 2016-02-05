@@ -147,7 +147,7 @@ data class ModuleTestSourceInfo(override val module: Module) : ModuleSourceInfo 
                 ProjectRootModificationTracker.getInstance(module.project))
     })
 
-    override fun friends() = module.cached(CachedValueProvider {
+    override fun modulesWhichInternalsVisible() = module.cached(CachedValueProvider {
         val list = SmartList<ModuleInfo>(module.productionSourceInfo())
 
         getRelatedProductionModule(module)?.let {
