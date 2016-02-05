@@ -1,0 +1,37 @@
+package
+
+public final class Parser</*0*/ TInput, /*1*/ TValue> {
+    public constructor Parser</*0*/ TInput, /*1*/ TValue>(/*0*/ f: (TInput) -> Result<TInput, TValue>)
+    public final val f: (TInput) -> Result<TInput, TValue>
+    public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+    public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+    public final operator fun invoke(/*0*/ input: TInput): Result<TInput, TValue>
+    public final fun </*0*/ TIntermediate, /*1*/ TValue2> mapJoin(/*0*/ selector: (TValue) -> Parser<TInput, TIntermediate>, /*1*/ projector: (TValue, TIntermediate) -> TValue2): Parser<TInput, TValue2>
+    public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+}
+
+public sealed class Result</*0*/ TInput, /*1*/ TValue> {
+    private constructor Result</*0*/ TInput, /*1*/ TValue>()
+    public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+    public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+    public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+
+    public final class ParseError</*0*/ TInput, /*1*/ TValue> : Result<TInput, TValue> {
+        public constructor ParseError</*0*/ TInput, /*1*/ TValue>(/*0*/ productionLabel: kotlin.String, /*1*/ child: Result.ParseError<TInput, *>?, /*2*/ rest: TInput)
+        public final val child: Result.ParseError<TInput, *>?
+        public final val productionLabel: kotlin.String
+        public final val rest: TInput
+        public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+        public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+        public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+    }
+
+    public final class Value</*0*/ TInput, /*1*/ TValue> : Result<TInput, TValue> {
+        public constructor Value</*0*/ TInput, /*1*/ TValue>(/*0*/ value: TValue, /*1*/ rest: TInput)
+        public final val rest: TInput
+        public final val value: TValue
+        public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+        public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+        public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+    }
+}
