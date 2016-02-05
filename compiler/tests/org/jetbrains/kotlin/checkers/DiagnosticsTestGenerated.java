@@ -3390,6 +3390,12 @@ public class DiagnosticsTestGenerated extends AbstractDiagnosticsTest {
                 doTest(fileName);
             }
 
+            @TestMetadata("ifElseNullableAny.kt")
+            public void testIfElseNullableAny() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/controlStructures/ifElseNullableAny.kt");
+                doTest(fileName);
+            }
+
             @TestMetadata("ifInResultOfLambda.kt")
             public void testIfInResultOfLambda() throws Exception {
                 String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/controlStructures/ifInResultOfLambda.kt");
