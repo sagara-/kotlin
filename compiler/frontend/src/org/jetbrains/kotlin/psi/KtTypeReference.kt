@@ -41,7 +41,7 @@ class KtTypeReference : KtElementImplStub<KotlinPlaceHolderStub<KtTypeReference>
         get() = KtStubbedPsiUtil.getStubOrPsiChild(this, KtStubElementTypes.TYPE_ELEMENT_TYPES, KtTypeElement.ARRAY_FACTORY)
 
     override fun getAnnotations(): List<KtAnnotation> {
-        return getStubOrPsiChildrenAsList(KtStubElementTypes.ANNOTATION)
+        return getStubOrPsiChildrenAsList(KtStubElementTypes.ANNOTATION).filterNotNull()
     }
 
     override fun getAnnotationEntries(): List<KtAnnotationEntry> {

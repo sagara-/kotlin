@@ -38,16 +38,16 @@ class KtClassBody : KtElementImplStub<KotlinPlaceHolderStub<KtClassBody>>, KtDec
     override fun <R, D> accept(visitor: KtVisitor<R, D>, data: D) = visitor.visitClassBody(this, data)
 
     val anonymousInitializers: List<KtAnonymousInitializer>
-        get() = findChildrenByType(KtNodeTypes.CLASS_INITIALIZER)
+        get() = findChildrenByType<KtAnonymousInitializer>(KtNodeTypes.CLASS_INITIALIZER).filterNotNull()
 
     internal val secondaryConstructors: List<KtSecondaryConstructor>
-        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.SECONDARY_CONSTRUCTOR)
+        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.SECONDARY_CONSTRUCTOR).filterNotNull()
 
     val properties: List<KtProperty>
-        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.PROPERTY)
+        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.PROPERTY).filterNotNull()
 
     val allCompanionObjects: List<KtObjectDeclaration>
-        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.OBJECT_DECLARATION).filter { it.isCompanion() }
+        get() = getStubOrPsiChildrenAsList(KtStubElementTypes.OBJECT_DECLARATION).filter { it != null && it.isCompanion() }
 
     val rBrace: PsiElement?
         get() = node.getChildren(TokenSet.create(KtTokens.RBRACE)).singleOrNull()?.psi
