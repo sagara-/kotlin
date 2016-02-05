@@ -1220,11 +1220,10 @@ public fun <C : MutableCollection<in R>, R> Sequence<*>.filterIsInstanceTo(desti
  */
 @kotlin.jvm.JvmName("averageOfByte")
 public fun Sequence<Byte>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1235,11 +1234,10 @@ public fun Sequence<Byte>.average(): Double {
  */
 @kotlin.jvm.JvmName("averageOfShort")
 public fun Sequence<Short>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1250,11 +1248,10 @@ public fun Sequence<Short>.average(): Double {
  */
 @kotlin.jvm.JvmName("averageOfInt")
 public fun Sequence<Int>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1265,11 +1262,10 @@ public fun Sequence<Int>.average(): Double {
  */
 @kotlin.jvm.JvmName("averageOfLong")
 public fun Sequence<Long>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1280,11 +1276,10 @@ public fun Sequence<Long>.average(): Double {
  */
 @kotlin.jvm.JvmName("averageOfFloat")
 public fun Sequence<Float>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1295,11 +1290,10 @@ public fun Sequence<Float>.average(): Double {
  */
 @kotlin.jvm.JvmName("averageOfDouble")
 public fun Sequence<Double>.average(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
     var count: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
         count += 1
     }
     return if (count == 0) 0.0 else sum / count
@@ -1310,10 +1304,9 @@ public fun Sequence<Double>.average(): Double {
  */
 @kotlin.jvm.JvmName("sumOfByte")
 public fun Sequence<Byte>.sum(): Int {
-    val iterator = iterator()
     var sum: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
@@ -1323,10 +1316,9 @@ public fun Sequence<Byte>.sum(): Int {
  */
 @kotlin.jvm.JvmName("sumOfShort")
 public fun Sequence<Short>.sum(): Int {
-    val iterator = iterator()
     var sum: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
@@ -1336,10 +1328,9 @@ public fun Sequence<Short>.sum(): Int {
  */
 @kotlin.jvm.JvmName("sumOfInt")
 public fun Sequence<Int>.sum(): Int {
-    val iterator = iterator()
     var sum: Int = 0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
@@ -1349,10 +1340,9 @@ public fun Sequence<Int>.sum(): Int {
  */
 @kotlin.jvm.JvmName("sumOfLong")
 public fun Sequence<Long>.sum(): Long {
-    val iterator = iterator()
     var sum: Long = 0L
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
@@ -1362,10 +1352,9 @@ public fun Sequence<Long>.sum(): Long {
  */
 @kotlin.jvm.JvmName("sumOfFloat")
 public fun Sequence<Float>.sum(): Float {
-    val iterator = iterator()
     var sum: Float = 0.0f
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
@@ -1375,10 +1364,9 @@ public fun Sequence<Float>.sum(): Float {
  */
 @kotlin.jvm.JvmName("sumOfDouble")
 public fun Sequence<Double>.sum(): Double {
-    val iterator = iterator()
     var sum: Double = 0.0
-    while (iterator.hasNext()) {
-        sum += iterator.next()
+    for (element in this) {
+        sum += element
     }
     return sum
 }
