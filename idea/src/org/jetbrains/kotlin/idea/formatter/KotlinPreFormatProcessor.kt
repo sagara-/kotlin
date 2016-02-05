@@ -30,8 +30,6 @@ import org.jetbrains.kotlin.utils.addToStdlib.lastIsInstanceOrNull
 
 private class Visitor(var range: TextRange) : KtTreeVisitorVoid() {
     override fun visitNamedDeclaration(declaration: KtNamedDeclaration) {
-        fun PsiElement.containsToken(type: IElementType) = allChildren.any { it.node.elementType == type }
-
         if (!range.contains(declaration.textRange)) return
 
         val classBody = declaration.parent as? KtClassBody ?: return
@@ -67,6 +65,8 @@ private class Visitor(var range: TextRange) : KtTreeVisitorVoid() {
 
         range = TextRange(range.startOffset, range.endOffset + delta)
     }
+
+    fun PsiElement.containsToken(type: IElementType) = allChildren.any { it.node.elementType == type }
 }
 
 class KotlinPreFormatProcessor : PreFormatProcessor {
